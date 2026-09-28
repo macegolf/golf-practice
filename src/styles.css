@@ -13,8 +13,9 @@
   color-scheme: light;
 }
 
+/* Appearance: data-theme on <html> is set from Settings; without it, follow the phone. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #101512;
     --surface: #1a211c;
     --text: #e8eee9;
@@ -26,6 +27,19 @@
     --danger: #ff6b6b;
     color-scheme: dark;
   }
+}
+
+:root[data-theme='dark'] {
+  --bg: #101512;
+  --surface: #1a211c;
+  --text: #e8eee9;
+  --muted: #97a69c;
+  --border: #2c3630;
+  --accent: #3fae6e;
+  --accent-strong: #5cc486;
+  --accent-soft: #1f3327;
+  --danger: #ff6b6b;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -445,3 +459,28 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 .sync-dot.saving, .sync-dot.loading { background: #e8a400; }
 .sync-dot.offline { background: var(--muted); }
 .sync-dot.error { background: var(--danger); }
+
+/* ---------- appearance picker ---------- */
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.segmented button {
+  min-height: 44px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.segmented button.on { background: var(--accent); color: #fff; }

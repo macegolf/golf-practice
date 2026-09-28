@@ -8,6 +8,7 @@ import { migrate } from '../data/migrate';
 import { activeResults } from '../data/selectors';
 import { useStore, type SyncStatus } from '../data/store';
 import { localDateInput } from '../lib/format';
+import { getTheme, setTheme, type Theme } from '../lib/theme';
 import { uid } from '../lib/uid';
 
 export default function Settings() {
@@ -61,6 +62,12 @@ export default function Settings() {
   return (
     <>
       <PageHeader title="Settings" />
+
+      <section className="section">
+        <h2>Appearance</h2>
+        <AppearancePicker />
+        <p className="muted small">Light is usually easier to read in bright sun. Saved on this device only.</p>
+      </section>
 
       <section className="section">
         <h2>Shot results</h2>
@@ -164,6 +171,29 @@ function SyncStatusLine() {
     <div className="sync-status small">
       <span className={`sync-dot ${sync.status}`} aria-hidden />
       <span>{STATUS_TEXT[sync.status]}</span>
+    </div>
+  );
+}
+
+const THEME_OPTIONS: { value: Theme; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'Automatic' },
+];
+
+function AppearancePicker() {
+  const [theme, setThemeState] = useState<Theme>(getTheme);
+  const choose = (t: Theme) => {
+    setTheme(t);
+    setThemeState(t);
+  };
+  return (
+    <div className="segmented" role="radiogroup" aria-label="Appearance">
+      {THEME_OPTIONS.map((o) => (
+        <button key={o.value} role="radio" aria-checked={theme === o.value} className={theme === o.value ? 'on' : ''} onClick={() => choose(o.value)}>
+          {o.label}
+        </button>
+      ))}
     </div>
   );
 }

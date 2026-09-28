@@ -10,6 +10,13 @@
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>Golf Practice</title>
+    <script>
+      // Apply the saved Light/Dark choice before first paint (see src/lib/theme.ts).
+      try {
+        var t = localStorage.getItem('golf-practice-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
