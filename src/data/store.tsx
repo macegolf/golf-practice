@@ -137,9 +137,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const local = stateRef.current;
       const remote = data ? migrate(data.data) : null;
       const sameAccount = meta.userId === uid;
+      // Local data that has never been linked to any account (used before signing in).
+      const unclaimed = meta.userId === null;
       const localIsNewer = sameAccount && meta.dirty && !!meta.updatedAt && (!data || meta.updatedAt > data.updated_at);
 
       remoteReady.current = true;
+      if (!sameAccount && !unclaimed && (!remote || !hasData(remote))) {
+        // Another person's data is on this device and this account is new: start it empty
+        // rather than copying their data in.
+        if (hasData(local)) backup('other-account', JSON.stringify(local));
+        const fresh = remote ?? initialState();
+        syncedJson.current = remote ? JSON.stringify(remote) : null;
+        writeMeta({ userId: uid, dirty: !remote, updatedAt: data?.updated_at ?? null });
+        setState(fresh);
+        setStatus(remote ? 'synced' : 'saving');
+        return;
+      }
       if (!remote || localIsNewer || (!hasData(remote) && hasData(local))) {
         // First sign-in with this account, unsynced offline changes, or an empty cloud copy.
         syncedJson.current = null;
