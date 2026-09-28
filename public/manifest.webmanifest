@@ -1,0 +1,9 @@
+{
+  "name": "Golf Practice Tracker",
+  "short_name": "Golf Practice",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f3",
+  "theme_color": "#1f6f43",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
