@@ -1,6 +1,7 @@
-// Tap feedback during a session: a short vibration always, plus an optional click
-// sound (per-device setting, on by default).
+// Tap feedback during a session: an optional vibration and an optional click sound
+// (per-device settings, both on by default).
 const KEY = 'golf-practice-click';
+const VIBRATE_KEY = 'golf-practice-vibrate';
 
 export function clickSoundEnabled(): boolean {
   try {
@@ -17,6 +18,27 @@ export function setClickSound(on: boolean) {
   } catch {
     // choice just won't persist
   }
+}
+
+export function vibrationEnabled(): boolean {
+  try {
+    return localStorage.getItem(VIBRATE_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+export function setVibration(on: boolean) {
+  try {
+    if (on) localStorage.removeItem(VIBRATE_KEY);
+    else localStorage.setItem(VIBRATE_KEY, 'off');
+  } catch {
+    // choice just won't persist
+  }
+}
+
+export function vibrate() {
+  navigator.vibrate?.(15);
 }
 
 let ctx: AudioContext | null = null;
@@ -46,6 +68,6 @@ export function playClick() {
 }
 
 export function tapFeedback() {
-  navigator.vibrate?.(15);
+  if (vibrationEnabled()) vibrate();
   if (clickSoundEnabled()) playClick();
 }

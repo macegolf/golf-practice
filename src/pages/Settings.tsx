@@ -8,7 +8,8 @@ import { migrate } from '../data/migrate';
 import { activeResults } from '../data/selectors';
 import { useStore, type SyncStatus } from '../data/store';
 import { localDateInput } from '../lib/format';
-import { clickSoundEnabled, playClick, setClickSound } from '../lib/feedback';
+import { getBarOrder, setBarOrder, type BarOrder } from '../lib/chartPrefs';
+import { clickSoundEnabled, playClick, setClickSound, setVibration, vibrate, vibrationEnabled } from '../lib/feedback';
 import { getTheme, setTheme, type Theme } from '../lib/theme';
 import { uid } from '../lib/uid';
 
@@ -71,6 +72,12 @@ export default function Settings() {
       </section>
 
       <section className="section">
+        <h2>Stats charts</h2>
+        <BarOrderPicker first={results[0]?.name ?? 'First result'} />
+        <p className="muted small">Which end of each Dashboard bar the first result sits at. Saved on this device only.</p>
+      </section>
+
+      <section className="section">
         <h2>Shot results</h2>
         <p className="muted small">These are the buttons you tap after each shot.</p>
         <ul className="card edit-list">
@@ -97,6 +104,7 @@ export default function Settings() {
           </li>
         </ul>
         <ClickSoundToggle />
+        <VibrationToggle />
       </section>
 
       <section className="section">
@@ -219,5 +227,52 @@ function ClickSoundToggle() {
         <span className="muted small setting-hint">Plays with the vibration when you tap a result. Saved on this device only.</span>
       </span>
     </label>
+  );
+}
+
+function VibrationToggle() {
+  const [on, setOn] = useState(vibrationEnabled);
+  return (
+    <label className="card toggle setting-toggle">
+      <input
+        type="checkbox"
+        checked={on}
+        onChange={(e) => {
+          setVibration(e.target.checked);
+          setOn(e.target.checked);
+          if (e.target.checked) vibrate();
+        }}
+      />
+      <span>
+        Vibrate on tap
+        <span className="muted small setting-hint">A short buzz when you tap a result. Saved on this device only.</span>
+      </span>
+    </label>
+  );
+}
+
+function BarOrderPicker({ first }: { first: string }) {
+  const [order, setOrder] = useState<BarOrder>(getBarOrder);
+  const options: { value: BarOrder; label: string }[] = [
+    { value: 'first-bottom', label: `${first} at the bottom` },
+    { value: 'first-top', label: `${first} at the top` },
+  ];
+  return (
+    <div className="segmented segmented-2" role="radiogroup" aria-label="Stats chart bar order">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          role="radio"
+          aria-checked={order === o.value}
+          className={order === o.value ? 'on' : ''}
+          onClick={() => {
+            setBarOrder(o.value);
+            setOrder(o.value);
+          }}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
   );
 }

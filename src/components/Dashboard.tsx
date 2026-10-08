@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { swingsOf } from '../data/selectors';
 import { useStore } from '../data/store';
 import type { AppState, Club, ResultType, Shot, ShotType, SwingType } from '../data/types';
+import { getBarOrder } from '../lib/chartPrefs';
 import { localDateInput, pct } from '../lib/format';
 
 // Stats → Dashboard: shot type → swing → one chart per club, with one 100%-stacked
@@ -135,6 +136,8 @@ export function Dashboard({ shots, hidden }: { shots: Shot[]; hidden: Set<string
 
 function TrendChart({ chart, results, withYear }: { chart: ClubChart; results: ResultType[]; withYear: boolean }) {
   const scroller = useRef<HTMLDivElement>(null);
+  // Segments render top to bottom; the empty space for hidden results always stays on top.
+  const firstOnTop = getBarOrder() === 'first-top';
   const [selected, setSelected] = useState<string | null>(null);
   const day = chart.days.find((d) => d.key === selected);
 
@@ -181,7 +184,7 @@ function TrendChart({ chart, results, withYear }: { chart: ClubChart; results: R
                   <span className="trend-stack">
                     {/* Hidden results leave empty space so the shown ones keep their true share. */}
                     {shownTotal < d.total && <span className="trend-gap" style={{ flexGrow: d.total - shownTotal }} />}
-                    {[...shown].reverse().map(({ r, n }) => (
+                    {(firstOnTop ? shown : [...shown].reverse()).map(({ r, n }) => (
                       <span key={r.id} className="trend-seg" style={{ flexGrow: n, background: r.color }} />
                     ))}
                   </span>
