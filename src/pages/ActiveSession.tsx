@@ -16,6 +16,7 @@ import {
 import { useStore } from '../data/store';
 import { formatDate, metres, pct } from '../lib/format';
 import { tally } from '../lib/stats';
+import { tapFeedback } from '../lib/feedback';
 import { uid } from '../lib/uid';
 
 export default function ActiveSession() {
@@ -86,7 +87,7 @@ export default function ActiveSession() {
       }),
     );
     setFlash((f) => ({ id: resultId, n: (f?.n ?? 0) + 1 }));
-    navigator.vibrate?.(15);
+    tapFeedback();
   };
 
   const undo = () => lastShot && update((s) => deleteShot(s, lastShot.id));

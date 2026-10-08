@@ -10,8 +10,8 @@ export interface ShotTypeSeed {
 export const DEFAULT_SHOT_TYPES: ShotTypeSeed[] = [
   { name: 'Full Swing', tracksDistance: true, swings: ['Full'] },
   { name: 'Pitch', tracksDistance: true, swings: ['3/4', '1/2', '1/4'] },
-  { name: 'Chip', tracksDistance: true, swings: ['Standard'] },
-  { name: 'Bunker', tracksDistance: true, swings: ['Standard'] },
+  { name: 'Chip', tracksDistance: true, swings: ['Short (0m - 3m)', 'Medium (4m - 7m)', 'Long (8m - 11m)', 'Extra Long (12m+)'] },
+  { name: 'Bunker', tracksDistance: true, swings: ['Short (5m)', 'Medium (10m)', 'Long (15m)'] },
   { name: 'Putt', tracksDistance: false, swings: ['Standard'] },
 ];
 

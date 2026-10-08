@@ -8,6 +8,7 @@ import { migrate } from '../data/migrate';
 import { activeResults } from '../data/selectors';
 import { useStore, type SyncStatus } from '../data/store';
 import { localDateInput } from '../lib/format';
+import { clickSoundEnabled, playClick, setClickSound } from '../lib/feedback';
 import { getTheme, setTheme, type Theme } from '../lib/theme';
 import { uid } from '../lib/uid';
 
@@ -95,6 +96,7 @@ export default function Settings() {
             </button>
           </li>
         </ul>
+        <ClickSoundToggle />
       </section>
 
       <section className="section">
@@ -195,5 +197,27 @@ function AppearancePicker() {
         </button>
       ))}
     </div>
+  );
+}
+
+function ClickSoundToggle() {
+  const [on, setOn] = useState(clickSoundEnabled);
+  return (
+    <label className="card toggle setting-toggle">
+      <input
+        type="checkbox"
+        checked={on}
+        onChange={(e) => {
+          setClickSound(e.target.checked);
+          setOn(e.target.checked);
+          // Play a sample so the volume can be checked straight away.
+          if (e.target.checked) playClick();
+        }}
+      />
+      <span>
+        Play audible 'click' on tap
+        <span className="muted small setting-hint">Plays with the vibration when you tap a result. Saved on this device only.</span>
+      </span>
+    </label>
   );
 }

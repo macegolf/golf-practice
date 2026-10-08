@@ -49,7 +49,7 @@ function Shell() {
   }, [pathname]);
 
   return (
-    <div className={`app${inSession ? ' app-session' : ''}`}>
+    <div className={`app${inSession ? ' app-session' : ''}${pathname === '/stats' ? ' app-wide' : ''}`}>
       <main className="main">
         <Routes>
           <Route path="/" element={<Home />} />

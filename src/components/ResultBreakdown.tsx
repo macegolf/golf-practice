@@ -3,7 +3,8 @@ import type { Shot } from '../data/types';
 import { pct } from '../lib/format';
 import { tally } from '../lib/stats';
 
-export function StackedBar({ shots }: { shots: Shot[] }) {
+/** `hidden` result ids are left out; the rest keep their share of all shots. */
+export function StackedBar({ shots, hidden }: { shots: Shot[]; hidden?: Set<string> }) {
   const { state } = useStore();
   const { rows, total } = tally(state, shots);
   return (
@@ -12,7 +13,7 @@ export function StackedBar({ shots }: { shots: Shot[] }) {
         <span className="stacked-empty" />
       ) : (
         rows
-          .filter((r) => r.count > 0)
+          .filter((r) => r.count > 0 && !hidden?.has(r.result.id))
           .map((r) => (
             <span
               key={r.result.id}
@@ -26,9 +27,12 @@ export function StackedBar({ shots }: { shots: Shot[] }) {
 }
 
 /** Table of count and share per result, with an inline bar per row. */
-export function ResultBreakdown({ shots }: { shots: Shot[] }) {
+export function ResultBreakdown({ shots, hidden }: { shots: Shot[]; hidden?: Set<string> }) {
   const { state } = useStore();
   const { rows, total } = tally(state, shots);
+  const shown = rows.filter((r) => !hidden?.has(r.result.id));
+  const shownCount = shown.reduce((n, r) => n + r.count, 0);
+  const filtered = shown.length < rows.length;
   return (
     <table className="breakdown">
       <thead>
@@ -40,7 +44,7 @@ export function ResultBreakdown({ shots }: { shots: Shot[] }) {
         </tr>
       </thead>
       <tbody>
-        {rows.map((r) => (
+        {shown.map((r) => (
           <tr key={r.result.id}>
             <td>
               <span className="swatch" style={{ background: r.result.color }} />
@@ -58,10 +62,10 @@ export function ResultBreakdown({ shots }: { shots: Shot[] }) {
       </tbody>
       <tfoot>
         <tr>
-          <td>Total</td>
-          <td className="num">{total}</td>
-          <td className="num">{total ? '100%' : '–'}</td>
-          <td />
+          <td>{filtered ? 'Shown' : 'Total'}</td>
+          <td className="num">{shownCount}</td>
+          <td className="num">{total ? pct(shownCount / total) : '–'}</td>
+          <td className="muted small">{filtered ? `of ${total} shots` : ''}</td>
         </tr>
       </tfoot>
     </table>
